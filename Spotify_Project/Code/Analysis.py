@@ -3,75 +3,75 @@ import math
 import matplotlib.pyplot as plt
 from scipy.stats import norm, chi2
 
-# CSV dosyasından veriyi okuyoruz
+# Reading the CSV file
 df = pd.read_csv("Data/smoking_data2.csv")
 
-# 'cigs_per_day' sütunundaki eksik verileri siliyoruz
+# Dropping missing values in the 'cigs_per_day' column
 cigs = df["cigs_per_day"].dropna()
 
-# Geçerli veri sayısını buluyoruz
+# Getting the number of valid data
 n = len(cigs)
 
-# Ortalama, ortanca, varyans, standart sapma ve standart hata hesaplıyoruz
+# Calculating mean, median, variance, standard deviation, and standard error
 mean = cigs.mean()
 median = cigs.median()
 var = cigs.var()
 std = cigs.std()
 se = std / math.sqrt(n)
 
-# Sonuçları yazdırıyoruz
-print("Ortalama:", round(mean, 2))
-print("Ortanca:", round(median, 2))
-print("Varyans:", round(var, 2))
-print("Standart Sapma:", round(std, 2))
-print("Standart Hata:", round(se, 4))
+# Printing the results
+print("Mean:", round(mean, 2))
+print("Median:", round(median, 2))
+print("Variance:", round(var, 2))
+print("Standard Deviation:", round(std, 2))
+print("Standard Error:", round(se, 4))
 
-# %95 güven aralığı için z değeri
+# z-score for 95% confidence interval
 z = 1.96
 
-# Ortalama için güven aralığını hesaplıyoruz
+# Calculating confidence interval for the mean
 mean_low = mean - z * se
 mean_high = mean + z * se
 
-# Varyans için güven aralığı (ki-kare dağılımı kullanılarak)
+# Calculating confidence interval for variance (using chi-square distribution)
 dfree = n - 1
 chi_low = chi2.ppf(0.025, dfree)
 chi_high = chi2.ppf(0.975, dfree)
 var_low = (dfree * var) / chi_high
 var_high = (dfree * var) / chi_low
 
-# Güven aralıklarını yazdırıyoruz
-print("\n%95 Güven Aralığı (Ortalama):", round(mean_low, 2), "-", round(mean_high, 2))
-print("%95 Güven Aralığı (Varyans):", round(var_low, 2), "-", round(var_high, 2))
+# Printing confidence intervals
+print("\n95% Confidence Interval (Mean):", round(mean_low, 2), "-", round(mean_high, 2))
+print("95% Confidence Interval (Variance):", round(var_low, 2), "-", round(var_high, 2))
 
-# Hipotez testi: ortalama gerçekten 10 mu?
+# Hypothesis test: is the mean really 10?
 mu_0 = 10
 z_score = (mean - mu_0) / se
-p = 2 * (1 - norm.cdf(abs(z_score)))  # iki yönlü test
+p = 2 * (1 - norm.cdf(abs(z_score)))  # two-tailed test
 
-# Test sonuçlarını yazdırıyoruz
-print("\nZ Skoru:", round(z_score, 2))
-print("P Değeri:", round(p, 4))
+# Printing test results
+print("\nZ Score:", round(z_score, 2))
+print("P Value:", round(p, 4))
 
-# Örneklem büyüklüğü hesabı (±1 hata payı, %90 güven düzeyi)
+# Sample size calculation (±1 margin of error, 90% confidence level)
 z90 = norm.ppf(0.95)
 E = 1
 n_gerekli = ((z90 * std) / E) ** 2
 
-# Gerekli örneklem sayısını yazdırıyoruz
-print("\nGerekli Örneklem Sayısı:", math.ceil(n_gerekli))
+# Printing required sample size
+print("\nRequired Sample Size:", math.ceil(n_gerekli))
 
-# Histogram çizimi
+# Plotting histogram
 plt.hist(cigs, bins=20, color="lightblue", edgecolor="black")
-plt.title("Günlük Sigara Tüketimi (Histogram)")
-plt.xlabel("Sigara Sayısı")
-plt.ylabel("Frekans")
+plt.title("Daily Cigarette Consumption (Histogram)")
+plt.xlabel("Number of Cigarettes")
+plt.ylabel("Frequency")
 plt.grid(True)
 plt.show()
 
-# Boxplot (kutucuk grafik) çizimi
+# Plotting boxplot
 plt.boxplot(cigs, patch_artist=True)
-plt.title("Günlük Sigara Tüketimi (Boxplot)")
-plt.ylabel("Sigara Sayısı")
+plt.title("Daily Cigarette Consumption (Boxplot)")
+plt.ylabel("Number of Cigarettes")
 plt.grid(True)
 plt.show()
