@@ -53,7 +53,7 @@ p = 2 * (1 - norm.cdf(abs(z_score)))  # two-tailed test
 print("\nZ Score:", round(z_score, 2))
 print("P Value:", round(p, 4))
 
-# Sample size calculation (±1 margin of error, 90% confidence level)
+# Sample size calculation (±0.1 margin of error, 90% confidence level)
 z90 = norm.ppf(0.95)
 E = 1
 n_gerekli = ((z90 * std) / E) ** 2
